@@ -9,14 +9,18 @@ import autograd
 
 jax.config.update("jax_enable_x64", True)
 
-def rosenbrock(x):
-    answer = sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+def rosenbrock_jax(x):
+    answer = jnp.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
     return answer
 
-jEvalFunc = jax.jit(rosenbrock)
-jGradFunc= jax.jit(jax.grad(rosenbrock))
-aEvalFunc = rosenbrock
-aGradFunc = autograd.grad(rosenbrock)
+def rosenbrock_autograd(x):
+    answer = anp.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+    return answer
+
+jEvalFunc = jax.jit(rosenbrock_jax)
+jGradFunc= jax.jit(jax.grad(rosenbrock_jax))
+aEvalFunc = rosenbrock_autograd
+aGradFunc = autograd.grad(rosenbrock_autograd)
 
 x0 = [76.0, 97.0, 20.0, 120.0, 0.01, 1e4]
 x1 = [76.0, 97.0, 20.0, 120.0, 0.01, 1e2]
