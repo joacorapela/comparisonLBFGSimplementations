@@ -25,7 +25,7 @@
 # ipython --pdb doTestSciPyHIPSautograd.py ../data/sixHumpCamel.ini
 # ipython --pdb doTestJAXSciPy.py ../data/sixHumpCamel.ini
 # ipython --pdb doTestSciPyManualgrad.py ../data/sixHumpCamel.ini
-# ipython --pdb doPlots.py sixHumpCamel 1.0  -- --ylimElapsedTime=[0.0,0.06]
+# ipython --pdb doPlots.py sixHumpCamel 1.0  -- --ylimElapsedTime=\[0.0,0.06\]
 
 # matlab -nodisplay -nosplash -nodesktop -r "paramsConfigFilename='../data/zakharov.ini';run('doTestMatlabManualgrad.m');exit;"
 # ipython --pdb doTestPytorchAutograd.py ../data/zakharov.ini  -- --lr=1.0
@@ -34,5 +34,5 @@ ipython --pdb doTestSciPyPyTorchAutograd.py ../data/zakharov.ini
 ipython --pdb doTestSciPyHIPSautograd.py ../data/zakharov.ini
 ipython --pdb doTestJAXSciPy.py ../data/zakharov.ini
 ipython --pdb doTestSciPyManualgrad.py ../data/zakharov.ini
-ipython --pdb doPlots.py zakharov 1.0 -- --ylimElapsedTime=[0.0,0.25]
+ipython --pdb doPlots.py zakharov 1.0 -- --ylimElapsedTime=\[0.0,0.25\]
 
