@@ -29,7 +29,7 @@ def main(argv):
     paramsConfig.read(paramsConfigFilename)
     generativeFunc = paramsConfig["data_params"]["generativeFunc"]
     minima = np.array([float(str) for str in paramsConfig["data_params"]["minima"][1:-1].split(",")])
-    x0 = torch.tensor([float(str) for str in paramsConfig["init_params"]["x0"][1:-1].split(",")])
+    x0 = torch.tensor([float(str) for str in paramsConfig["init_params"]["x0"][1:-1].split(",")], dtype=torch.double)
     minima = minima.reshape((-1, len(x0)))
     maxIter = int(paramsConfig["optim_params"]["maxIter"])
     toleranceGrad = float(paramsConfig["optim_params"]["toleranceGrad"])
@@ -38,7 +38,7 @@ def main(argv):
     nRepeats = int(paramsConfig["test_params"]["nRepeats"])
 
     if generativeFunc=="rosenbrock":
-        evalFunc = testFunctions.rosenbrock
+        evalFunc = testFunctions.rosenbrock_pytorch
     elif generativeFunc=="sixHumpCamel":
         evalFunc = testFunctions.sixHumpCamel
     elif generativeFunc=="zakharov":
@@ -46,29 +46,25 @@ def main(argv):
     else:
         raise ValueError("Unrecognized generativeFunc={:s}".format(generativeFunc))
 
-    curEval = torch.tensor([-float("inf")])
-
     def closure():
-        nonlocal curEval
-
-        if torch.is_grad_enabled():
-            optimizer.zero_grad()
+        optimizer.zero_grad()
         curEval = evalFunc(x=x[0])
-        if curEval.requires_grad:
-            curEval.backward(retain_graph=True)
+        curEval.backward(retain_graph=True)
         return curEval
 
-    results = torch.zeros((nRepeats, 2))
+    results = torch.zeros((nRepeats, 3))
     print("x0=", x0)
     for i in range(nRepeats):
         x = [copy.deepcopy(x0)]
         x[0].requires_grad = True
-        optimizer = torch.optim.LBFGS(x, max_iter=maxIter, lr=lr, line_search_fn=lineSearchFn, tolerance_grad=toleranceGrad, tolerance_change=toleranceChange)
+        optimizer = torch.optim.LBFGS(x, max_iter=maxIter, line_search_fn=lineSearchFn, tolerance_grad=toleranceGrad, tolerance_change=toleranceChange)
         startTime = time.time()
         optimizer.step(closure)
         elapsedTime = time.time()-startTime
+        curEval = evalFunc(x=x[0])
         results[i,0] = utils.minL2NormToMinima(x=x[0].detach().numpy(), minima=minima)
         results[i,1] = elapsedTime
+        results[i,2] = curEval
     np.savetxt(resultsFilename, results.detach().numpy(), delimiter=",")
     # pdb.set_trace()
 
