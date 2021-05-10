@@ -36,7 +36,7 @@ def main(argv):
     nRepeats = int(paramsConfig["test_params"]["nRepeats"])
 
     if generativeFunc=="rosenbrock":
-        evalFunc = testFunctions.rosenbrock
+        evalFunc = testFunctions.rosenbrock_autogradNumpy
     elif generativeFunc=="sixHumpCamel":
         evalFunc = testFunctions.sixHumpCamel
     elif generativeFunc=="zakharov":
