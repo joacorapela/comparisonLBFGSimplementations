@@ -29,7 +29,7 @@ def main(argv):
     paramsConfig.read(paramsConfigFilename)
     generativeFunc = paramsConfig["data_params"]["generativeFunc"]
     minima = np.array([float(str) for str in paramsConfig["data_params"]["minima"][1:-1].split(",")])
-    x0 = torch.tensor([float(str) for str in paramsConfig["init_params"]["x0"][1:-1].split(",")])
+    x0 = torch.tensor([float(str) for str in paramsConfig["init_params"]["x0"][1:-1].split(",")], dtype=torch.double)
     minima = minima.reshape((-1, len(x0)))
     maxIter = int(paramsConfig["optim_params"]["maxIter"])
     toleranceGrad = float(paramsConfig["optim_params"]["toleranceGrad"])
@@ -38,7 +38,7 @@ def main(argv):
     nRepeats = int(paramsConfig["test_params"]["nRepeats"])
 
     if generativeFunc=="rosenbrock":
-        evalFunc = testFunctions.rosenbrock
+        evalFunc = testFunctions.rosenbrock_pytorch
         evalGrad = testFunctions.rosenbrockManualgrad
     elif generativeFunc=="sixHumpCamel":
         evalFunc = testFunctions.sixHumpCamel
