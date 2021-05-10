@@ -87,8 +87,20 @@ def sixHumpCamelWithManualgrad(x):
     grad = sixHumpCamelManualgrad(x)
     return (func, grad)
 
-def rosenbrock(x):
+def rosenbrock_python(x):
     answer = sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+    return answer
+
+def rosenbrock_pytorch(x):
+    answer = torch.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+    return answer
+
+def rosenbrock_autogradNumpy(x):
+    answer = anp.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
+    return answer
+
+def rosenbrock_jaxNumpy(x):
+    answer = jnp.sum(100.0*(x[1:]-x[:-1]**2.0)**2.0 + (1-x[:-1])**2.0)
     return answer
 
 def rosenbrockManualgrad(x):
@@ -104,7 +116,7 @@ def rosenbrockManualgrad(x):
 def rosenbrockWithAutograd(x):
     x = torch.from_numpy(x)
     x.requires_grad = True
-    func = rosenbrock(x)
+    func = rosenbrock_pytorch(x)
     func.backward()
     func = func.detach().numpy()
     grad = x.grad.detach().numpy()
@@ -112,7 +124,7 @@ def rosenbrockWithAutograd(x):
     return (func, grad)
 
 def rosenbrockWithManualgrad(x):
-    func = rosenbrock(x)
+    func = rosenbrock_python(x)
     grad = rosenbrockManualgrad(x)
     return (func, grad)
 
