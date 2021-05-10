@@ -39,7 +39,7 @@ def main(argv):
     nRepeats = int(paramsConfig["test_params"]["nRepeats"])
 
     if generativeFunc=="rosenbrock":
-        evalFunc = testFunctions.rosenbrock
+        evalFunc = testFunctions.rosenbrock_jaxNumpy
     elif generativeFunc=="sixHumpCamel":
         evalFunc = testFunctions.sixHumpCamel
     elif generativeFunc=="zakharov":
@@ -51,11 +51,18 @@ def main(argv):
 
     minimizeOptions = {'gtol': toleranceGrad, 'maxiter': maxIter}
 
+    @jax.jit
+    def minimize_jit(x0):
+        out = jax.scipy.optimize.minimize(fun=evalFunc, x0=x0, method='BFGS')
+        out = out._replace(message=None)
+        return out
+
     results = np.zeros((nRepeats, 2))
     print("x0=", x0)
     for i in range(nRepeats):
         startTime = time.time()
-        optimRes = jax.scipy.optimize.minimize(fun=evalFunc, x0=x0, method='BFGS', options=minimizeOptions)
+        # optimRes = jax.scipy.optimize.minimize(fun=evalFunc, x0=x0, method='BFGS', options=minimizeOptions)
+        optimRes = minimize_jit(x0=x0)
         elapsedTime = time.time()-startTime
         results[i,0] = utils.minL2NormToMinima(x=optimRes.x, minima=minima)
         results[i,1] = elapsedTime
